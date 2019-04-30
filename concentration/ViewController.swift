@@ -9,19 +9,25 @@
 import UIKit
 
 class ViewController: UIViewController {
-    lazy var game = Concentration(numberOfPairOfCards: (cardButtons.count+1)/2)
-    var emojis: [String] = ["👻", "🦇", "🍭", "😈", "🎃", "👻", "🍎", "🍬", "🙀", "😱"]
-    var emoji = [Int:String]()
+    private var emojis: [String] = ["👻", "🦇", "🍭", "😈", "🎃", "👻", "🍎", "🍬", "🙀", "😱"]
+    private var emoji = [Int:String]()
+    private lazy var game = Concentration(numberOfPairOfCards: numberOfPairsOfCards)
     
-    var flipCount = 0 {
+    var numberOfPairsOfCards: Int {
+        get {
+            return (cardButtons.count+1)/2
+        }
+    }
+    private(set) var flipCount = 0 {
         didSet {
             flipCountLabel.text = "Flips: \(flipCount)"
         }
     }
     
-    @IBOutlet weak var flipCountLabel: UILabel!
-    @IBOutlet var cardButtons: [UIButton]!
-    @IBAction func touchCard(_ sender: UIButton) {
+    @IBOutlet private weak var flipCountLabel: UILabel!
+    @IBOutlet private var cardButtons: [UIButton]!
+    
+    @IBAction private func touchCard(_ sender: UIButton) {
         flipCount += 1
         if let cardIndex = cardButtons.index(of: sender) {
             game.chooseCard(at: cardIndex)
@@ -31,7 +37,7 @@ class ViewController: UIViewController {
         }
     }
     
-    func updateViewFromModel() {
+    private func updateViewFromModel() {
         for index in cardButtons.indices {
             let button = cardButtons[index]
             let card = game.cards[index]
@@ -46,13 +52,26 @@ class ViewController: UIViewController {
         }
     }
     
-    func emoji(for card: Card) -> String {
+    private func emoji(for card: Card) -> String {
         if emoji[card.id] == nil, emojis.count > 0 {
-            let randomIndex = Int(arc4random_uniform(UInt32(emojis.count)))
-            emoji[card.id] = emojis.remove(at: randomIndex)
+            emoji[card.id] = emojis.remove(at: emojis.count.arc4random)
         }
         
         return emoji[card.id] ?? "?"
+    }
+    
+}
+
+extension Int {
+    var arc4random: Int {
+        if self > 0 {
+            return Int(arc4random_uniform(UInt32(self)))
+        } else if self < 0 {
+            return -Int(arc4random_uniform(UInt32(self)))
+        }else {
+            return 0
+        }
+        
     }
 }
 

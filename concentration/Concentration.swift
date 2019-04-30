@@ -9,20 +9,32 @@
 import Foundation
 
 class Concentration {
-    var cards = [Card]()
-    var indexOfOnlyFacedUpCard: Int?
     
-    init(numberOfPairOfCards: Int) {
-        
-        for _ in 1...numberOfPairOfCards {
-            let card = Card()
-            cards += [card, card]
+    private(set) var cards = [Card]()
+    private var indexOfOnlyFacedUpCard: Int? {
+        get {
+            var foundIndex: Int?
+            for index in cards.indices {
+                if cards[index].isFaceUp {
+                    if foundIndex == nil {
+                        foundIndex = index
+                    } else {
+                        return nil
+                    }
+                }
+            }
+            return foundIndex
         }
-        
-        //TODO: Shuffle cards
+        set {
+            for index in cards.indices {
+                cards[index].isFaceUp = (index == newValue)
+            }
+        }
     }
     
     func chooseCard(at index: Int) {
+        assert(cards.indices.contains(index), "Concentration.chooseCard(at: \(index)): chosen index not in the cards")
+        
         if !cards[index].isMatched {
             if let matchIndex = indexOfOnlyFacedUpCard, matchIndex != index {
                 if cards[matchIndex].id == cards[index].id {
@@ -30,13 +42,20 @@ class Concentration {
                     cards[matchIndex].isMatched = true
                 }
                 cards[index].isFaceUp = true
-                indexOfOnlyFacedUpCard = nil
             } else {
-                for flipDownIndex in cards.indices {
-                    cards[flipDownIndex].isFaceUp = false
-                    indexOfOnlyFacedUpCard = index
-                }
+                indexOfOnlyFacedUpCard = index
             }
         }
+    }
+    
+    init(numberOfPairOfCards: Int) {
+        assert(numberOfPairOfCards > 0, "Concentration.init(\(numberOfPairOfCards)): you must have at least one pair of cards")
+        
+        for _ in 1...numberOfPairOfCards {
+            let card = Card()
+            cards += [card, card]
+        }
+        
+        //TODO: Shuffle cards
     }
 }

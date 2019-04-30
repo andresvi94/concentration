@@ -11,11 +11,12 @@ import Foundation
 struct Card {
     var isFaceUp = false
     var isMatched = false
+    //TODO: make private
     var id: Int
     
-    static var identifierFactory = 0
+    private static var identifierFactory = 0
     
-    static func getUniqueId() -> Int {
+    private static func getUniqueId() -> Int {
         identifierFactory += 1
         return identifierFactory
     }
