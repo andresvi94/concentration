@@ -9,7 +9,9 @@
 import Foundation
 
 class Concentration {
-    
+    private(set) var totalMatches = 0
+    private(set) var flipCount = 0
+    private(set) var scoreCount = 0
     private(set) var cards = [Card]()
     private var indexOfOnlyFacedUpCard: Int? {
         get {
@@ -34,14 +36,22 @@ class Concentration {
     
     func chooseCard(at index: Int) {
         assert(cards.indices.contains(index), "Concentration.chooseCard(at: \(index)): chosen index not in the cards")
-        
+        flipCount += 1
         if !cards[index].isMatched {
             if let matchIndex = indexOfOnlyFacedUpCard, matchIndex != index {
                 if cards[matchIndex].id == cards[index].id {
                     cards[index].isMatched = true
                     cards[matchIndex].isMatched = true
+                    scoreCount += 2
+                    totalMatches -= 1
+                    print("totalMatches: \(totalMatches)")
+                } else if (cards[matchIndex].isSeen && cards[index].isSeen) {
+                    scoreCount -= 2
+                } else if (cards[matchIndex].isSeen || cards[index].isSeen){
+                    scoreCount -= 1
                 }
                 cards[index].isFaceUp = true
+                cards[index].isSeen = true
             } else {
                 indexOfOnlyFacedUpCard = index
             }
@@ -50,12 +60,20 @@ class Concentration {
     
     init(numberOfPairOfCards: Int) {
         assert(numberOfPairOfCards > 0, "Concentration.init(\(numberOfPairOfCards)): you must have at least one pair of cards")
+        totalMatches = numberOfPairOfCards
         
         for _ in 1...numberOfPairOfCards {
             let card = Card()
             cards += [card, card]
         }
         
-        //TODO: Shuffle cards
+        //shuffle cards
+        for index in cards.indices {
+            let rand = cards.count.arc4random
+            cards.swapAt(index, rand)
+        }
+        
     }
 }
+
+

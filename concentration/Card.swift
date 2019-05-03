@@ -11,6 +11,7 @@ import Foundation
 struct Card {
     var isFaceUp = false
     var isMatched = false
+    var isSeen = false
     //TODO: make private
     var id: Int
     
