@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController {
     private var game: Concentration!
-    private var emoji = [Int:String]()
+    private var emoji = [Card:String]()
     private var emojis = [String]()
     typealias ThemeData = (emoji: [String], backGroundColor: UIColor, cardBackColor: UIColor)
     
@@ -108,11 +108,11 @@ class ViewController: UIViewController {
     }
     
     private func emoji(for card: Card) -> String {
-        if emoji[card.id] == nil, emojis.count > 0 {
-            emoji[card.id] = emojis.remove(at: emojis.count.arc4random)
+        if emoji[card] == nil, emojis.count > 0 {
+            emoji[card] = emojis.remove(at: emojis.count.arc4random)
         }
         
-        return emoji[card.id] ?? "?"
+        return emoji[card] ?? "?"
     }
     
 }
